@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     # Optional: OpenAI for "Mentor Note"
     openai_api_key: str | None = None
 
+    # CORS: comma-separated extra origins (e.g. https://your-app.vercel.app)
+    cors_origins: str = ""
+
     class Config:
         env_file = str(_ROOT_ENV) if _ROOT_ENV.exists() else ".env"
         env_file_encoding = "utf-8"
