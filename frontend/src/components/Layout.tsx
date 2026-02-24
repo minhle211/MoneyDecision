@@ -5,6 +5,8 @@ import { useFinanceStore } from '../store/useFinanceStore'
 const nav = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/profile', label: 'Profile' },
+  { to: '/goals', label: 'Goals' },
+  { to: '/scenarios', label: 'Scenarios' },
   { to: '/simulator', label: 'Simulator' },
 ]
 

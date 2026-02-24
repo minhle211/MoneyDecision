@@ -55,3 +55,65 @@ class FinanceEngine:
                 }
             )
         return result
+
+    @staticmethod
+    def debt_payoff_timeline(
+        balance: Decimal, apr: Decimal, monthly_payment: Decimal, max_months: int = 120
+    ) -> tuple[int | float, list[dict[str, Any]], Decimal]:
+        """Returns (months_to_payoff, month-by-month timeline, total_interest)."""
+        monthly_rate = (apr / 100) / 12
+        b = float(balance)
+        p = float(monthly_payment)
+        r = float(monthly_rate)
+        total_interest = Decimal("0")
+        result: list[dict[str, Any]] = []
+        month = 0
+        while b > 0 and month < max_months:
+            month += 1
+            interest = b * r
+            total_interest += Decimal(str(round(interest, 2)))
+            principal = min(p - interest, b)
+            b = b - principal
+            result.append({
+                "month": month,
+                "balance": Decimal(str(round(max(0, b), 2))),
+                "interest": Decimal(str(round(interest, 2))),
+            })
+        months_to_payoff = float("inf") if b > 0 else month
+        return months_to_payoff, result, total_interest
+
+    @staticmethod
+    def investment_projection(
+        monthly_contribution: Decimal, annual_return_pct: Decimal, months: int
+    ) -> list[dict[str, Any]]:
+        """Compound growth: balance each month (e.g. ETF)."""
+        r = float(annual_return_pct / 100) / 12
+        contrib = float(monthly_contribution)
+        balance = 0.0
+        total_contributed = Decimal("0")
+        result: list[dict[str, Any]] = []
+        for m in range(1, months + 1):
+            balance += contrib
+            total_contributed += Decimal(str(round(contrib, 2)))
+            balance *= 1 + r
+            result.append({
+                "month": m,
+                "balance": Decimal(str(round(balance, 2))),
+                "total_contributed": total_contributed,
+            })
+        return result
+
+    @staticmethod
+    def goal_timeline(
+        current_savings: Decimal, monthly_saving: Decimal, target_amount: Decimal
+    ) -> int | float:
+        """Months until savings reach target (no growth for simplicity)."""
+        current = float(current_savings)
+        monthly = float(monthly_saving)
+        target = float(target_amount)
+        if monthly <= 0:
+            return float("inf") if current < target else 0
+        need = target - current
+        if need <= 0:
+            return 0
+        return math.ceil(need / monthly)

@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import Goals from './pages/Goals'
+import Scenarios from './pages/Scenarios'
 import Simulator from './pages/Simulator'
 import Login from './pages/Login'
 
@@ -13,6 +15,8 @@ function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="goals" element={<Goals />} />
+        <Route path="scenarios" element={<Scenarios />} />
         <Route path="simulator" element={<Simulator />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

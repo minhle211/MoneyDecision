@@ -15,7 +15,23 @@ api.interceptors.request.use((config) => {
 export interface ProfilePayload {
   monthly_income?: number
   fixed_costs?: number
+  current_savings?: number
   risk_score?: number
+}
+
+export interface GoalPayload {
+  name: string
+  goal_type: string
+  target_amount: number
+  target_months?: number
+}
+
+export interface GoalResponse {
+  id: number
+  name: string
+  goal_type: string
+  target_amount: number
+  target_months?: number
 }
 
 export interface DebtPayload {
@@ -49,6 +65,24 @@ export const profileApi = {
   getAllocation: () => api.get('/v1/profile/allocation'),
   getProjection: (debtId: number) => api.get(`/v1/profile/projection/${debtId}`),
   getMentorNote: () => api.get<{ note: string }>('/v1/profile/mentor-note'),
+  getGoals: () => api.get<GoalResponse[]>('/v1/profile/goals'),
+  addGoal: (data: GoalPayload) => api.post<GoalResponse>('/v1/profile/goals', data),
+  updateGoal: (goalId: number, data: Partial<GoalPayload>) => api.put<GoalResponse>(`/v1/profile/goals/${goalId}`, data),
+  deleteGoal: (goalId: number) => api.delete(`/v1/profile/goals/${goalId}`),
+}
+
+export const scenariosApi = {
+  debtExtra: (data: { debt_id: number; extra_monthly: number; months?: number }) =>
+    api.post('/v1/scenarios/debt-extra', data),
+  invest: (data: { monthly_amount: number; annual_return_pct?: number; months?: number }) =>
+    api.post('/v1/scenarios/invest', data),
+  savingRate: (data: {
+    current_saving_rate_pct: number
+    new_saving_rate_pct: number
+    goal_id: number
+    monthly_income: number
+    current_savings: number
+  }) => api.post('/v1/scenarios/saving-rate', data),
 }
 
 export default api

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user_id
-from app.models import get_db, User, FinancialProfile, Debt
+from app.models import get_db, User, FinancialProfile, Debt, Goal
 from app.schemas import (
     ProfileCreate,
     ProfileUpdate,
@@ -14,6 +14,9 @@ from app.schemas import (
     DebtCreate,
     DebtResponse,
     DebtPayoffResult,
+    GoalCreate,
+    GoalUpdate,
+    GoalResponse,
     AllocationRecommendation,
     MentorNoteResponse,
 )
@@ -53,6 +56,8 @@ def update_my_profile(
         profile.monthly_income = data.monthly_income
     if data.fixed_costs is not None:
         profile.fixed_costs = data.fixed_costs
+    if data.current_savings is not None:
+        profile.current_savings = data.current_savings
     if data.risk_score is not None:
         profile.risk_score = data.risk_score
     db.commit()
@@ -71,10 +76,80 @@ def create_my_profile(
         profile.monthly_income = data.monthly_income
     if data.fixed_costs is not None:
         profile.fixed_costs = data.fixed_costs
+    if data.current_savings is not None:
+        profile.current_savings = data.current_savings
     profile.risk_score = data.risk_score
     db.commit()
     db.refresh(profile)
     return profile
+
+
+@router.get("/goals", response_model=list[GoalResponse])
+def list_goals(
+    user_id: Annotated[int, Depends(get_current_user_id)],
+    db: Session = Depends(get_db),
+):
+    profile = _get_or_create_profile(user_id, db)
+    return list(profile.goals) if profile.goals else []
+
+
+@router.post("/goals", response_model=GoalResponse)
+def add_goal(
+    data: GoalCreate,
+    user_id: Annotated[int, Depends(get_current_user_id)],
+    db: Session = Depends(get_db),
+):
+    profile = _get_or_create_profile(user_id, db)
+    goal = Goal(
+        profile_id=profile.id,
+        name=data.name,
+        goal_type=data.goal_type,
+        target_amount=data.target_amount,
+        target_months=data.target_months,
+    )
+    db.add(goal)
+    db.commit()
+    db.refresh(goal)
+    return goal
+
+
+@router.put("/goals/{goal_id}", response_model=GoalResponse)
+def update_goal(
+    goal_id: int,
+    data: GoalUpdate,
+    user_id: Annotated[int, Depends(get_current_user_id)],
+    db: Session = Depends(get_db),
+):
+    profile = _get_or_create_profile(user_id, db)
+    goal = db.query(Goal).filter(Goal.id == goal_id, Goal.profile_id == profile.id).first()
+    if not goal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    if data.name is not None:
+        goal.name = data.name
+    if data.goal_type is not None:
+        goal.goal_type = data.goal_type
+    if data.target_amount is not None:
+        goal.target_amount = data.target_amount
+    if data.target_months is not None:
+        goal.target_months = data.target_months
+    db.commit()
+    db.refresh(goal)
+    return goal
+
+
+@router.delete("/goals/{goal_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_goal(
+    goal_id: int,
+    user_id: Annotated[int, Depends(get_current_user_id)],
+    db: Session = Depends(get_db),
+):
+    profile = _get_or_create_profile(user_id, db)
+    goal = db.query(Goal).filter(Goal.id == goal_id, Goal.profile_id == profile.id).first()
+    if not goal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found")
+    db.delete(goal)
+    db.commit()
+    return None
 
 
 @router.post("/debts", response_model=DebtResponse)

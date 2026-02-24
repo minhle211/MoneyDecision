@@ -6,8 +6,19 @@ from .profile import (
     ProfileCreate,
     ProfileUpdate,
     ProfileResponse,
+    GoalCreate,
+    GoalUpdate,
+    GoalResponse,
     AllocationRecommendation,
     MentorNoteResponse,
+)
+from .scenario import (
+    DebtExtraScenarioRequest,
+    DebtExtraScenarioResponse,
+    InvestScenarioRequest,
+    InvestScenarioResponse,
+    SavingRateScenarioRequest,
+    SavingRateScenarioResponse,
 )
 
 __all__ = [
@@ -21,6 +32,15 @@ __all__ = [
     "ProfileCreate",
     "ProfileUpdate",
     "ProfileResponse",
+    "GoalCreate",
+    "GoalUpdate",
+    "GoalResponse",
     "AllocationRecommendation",
     "MentorNoteResponse",
+    "DebtExtraScenarioRequest",
+    "DebtExtraScenarioResponse",
+    "InvestScenarioRequest",
+    "InvestScenarioResponse",
+    "SavingRateScenarioRequest",
+    "SavingRateScenarioResponse",
 ]

@@ -4,9 +4,10 @@ import { profileApi } from '../services/api'
 import type { Debt } from '../store/useFinanceStore'
 
 export default function Profile() {
-  const { income, expenses, setProfile, debts, setDebts, token } = useFinanceStore()
+  const { income, expenses, currentSavings, setProfile, debts, setDebts, token } = useFinanceStore()
   const [localIncome, setLocalIncome] = useState('')
   const [localExpenses, setLocalExpenses] = useState('')
+  const [localSavings, setLocalSavings] = useState('')
   const [saving, setSaving] = useState(false)
   const [debtForm, setDebtForm] = useState({ name: '', balance: '', apr: '', monthly_payment: '' })
   const [addingDebt, setAddingDebt] = useState(false)
@@ -14,7 +15,8 @@ export default function Profile() {
   useEffect(() => {
     setLocalIncome(String(income || ''))
     setLocalExpenses(String(expenses || ''))
-  }, [income, expenses])
+    setLocalSavings(String(currentSavings ?? ''))
+  }, [income, expenses, currentSavings])
 
   useEffect(() => {
     if (!token) return
@@ -23,6 +25,7 @@ export default function Profile() {
       setProfile({
         income: Number(p.monthly_income) || 0,
         expenses: Number(p.fixed_costs) || 0,
+        currentSavings: Number(p.current_savings) || 0,
       })
       setDebts(p.debts || [])
     })
@@ -35,6 +38,7 @@ export default function Profile() {
       .updateMe({
         monthly_income: localIncome ? Number(localIncome) : undefined,
         fixed_costs: localExpenses ? Number(localExpenses) : undefined,
+        current_savings: localSavings ? Number(localSavings) : undefined,
       })
       .then(() => setSaving(false))
       .catch(() => setSaving(false))
@@ -87,6 +91,16 @@ export default function Profile() {
               onChange={(e) => setLocalExpenses(e.target.value)}
               className="input"
               placeholder="2000"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Current savings ($)</label>
+            <input
+              type="number"
+              value={localSavings}
+              onChange={(e) => setLocalSavings(e.target.value)}
+              className="input"
+              placeholder="0"
             />
           </div>
         </div>
