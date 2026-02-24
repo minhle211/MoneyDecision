@@ -49,9 +49,12 @@ _origins = [
 ]
 if settings.cors_origins:
     _origins = [*_origins, *(o.strip() for o in settings.cors_origins.split(",") if o.strip())]
+# Allow any Vercel deployment (production + preview) so OPTIONS preflight succeeds
+_origin_regex = r"https://.*\.vercel\.app"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
+    allow_origin_regex=_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
