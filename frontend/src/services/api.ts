@@ -36,6 +36,9 @@ export const authApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
+  /** Exchange Firebase ID token for app JWT. Backend must have Firebase Admin configured. */
+  firebaseLogin: (idToken: string) =>
+    api.post<{ access_token: string }>('/v1/auth/firebase', { id_token: idToken }),
 }
 
 export const profileApi = {

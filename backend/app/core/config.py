@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # CORS: comma-separated extra origins (e.g. https://your-app.vercel.app)
     cors_origins: str = ""
 
+    # Optional: Firebase Auth – JSON string of service account key (enables POST /api/v1/auth/firebase)
+    firebase_service_account_json: str | None = None
+
     class Config:
         env_file = str(_ROOT_ENV) if _ROOT_ENV.exists() else ".env"
         env_file_encoding = "utf-8"

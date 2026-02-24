@@ -48,26 +48,29 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold text-slate-800">Dashboard</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+        <p className="mt-1 text-slate-600 text-sm">Your money at a glance</p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-          <p className="text-sm text-slate-500">Monthly Income</p>
-          <p className="text-xl font-semibold text-emerald-700">${income.toLocaleString()}</p>
+        <div className="card">
+          <p className="card-header">Monthly Income</p>
+          <p className="card-value text-emerald-600">${income.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-          <p className="text-sm text-slate-500">Fixed Costs</p>
-          <p className="text-xl font-semibold text-slate-800">${expenses.toLocaleString()}</p>
+        <div className="card">
+          <p className="card-header">Fixed Costs</p>
+          <p className="card-value">${expenses.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-          <p className="text-sm text-slate-500">Debts</p>
-          <p className="text-xl font-semibold text-slate-800">{debts.length}</p>
+        <div className="card">
+          <p className="card-header">Debts</p>
+          <p className="card-value">{debts.length}</p>
         </div>
       </div>
 
       {allocationData.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-4 border border-slate-200">
-          <h2 className="text-lg font-medium text-slate-800 mb-4">50/30/20 Allocation</h2>
+        <div className="card">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">50/30/20 Allocation</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={allocationData} layout="vertical" margin={{ left: 80 }}>
@@ -83,14 +86,14 @@ export default function Dashboard() {
       )}
 
       {mentorNote && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <h2 className="text-lg font-medium text-emerald-800 mb-2">Mentor note</h2>
-          <p className="text-slate-700">{mentorNote}</p>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-5">
+          <h2 className="text-lg font-semibold text-emerald-800 mb-2">Mentor note</h2>
+          <p className="text-slate-700 leading-relaxed">{mentorNote}</p>
         </div>
       )}
 
       {!token && (
-        <p className="text-slate-500">
+        <p className="text-slate-500 text-sm">
           Sign in and set your profile to see allocation and charts.
         </p>
       )}

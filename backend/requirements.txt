@@ -11,5 +11,7 @@ bcrypt>=4.0.0
 python-multipart>=0.0.22
 # Optional: Mentor Note (set OPENAI_API_KEY to enable)
 openai>=1.12.0
+# Optional: Firebase Auth (set FIREBASE_SERVICE_ACCOUNT_JSON to enable)
+firebase-admin>=6.4.0
 # Dev / test
 pytest>=7.4.0

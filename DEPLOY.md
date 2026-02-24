@@ -78,6 +78,74 @@ The backend must allow your Vercel origin. Set on the backend:
 
 If you use Vercel preview deployments, add those too, or use a pattern your host supports (e.g. `https://*-your-team.vercel.app`). Multiple origins: comma-separated, no spaces (or trim spaces in code – we do trim).
 
+---
+
+## Optional: Firebase Auth (login / logout)
+
+You can add **Firebase Authentication** so users can sign in with Firebase (email/password) and the app exchanges the Firebase ID token for your backend JWT.
+
+### Step 2a – Firebase Console (project + auth + web app)
+
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) and sign in.
+2. **Create a project** (or pick an existing one): click **Add project** → enter a name (e.g. `finbud`) → follow the prompts (Google Analytics optional) → **Create project**.
+3. **Enable Email/Password sign-in:**
+   - In the left sidebar, click **Build** → **Authentication**.
+   - Click **Get started** (if shown).
+   - Open the **Sign-in method** tab.
+   - Click **Email/Password** → turn **Enable** on → **Save**.
+4. **Add a web app and get the config:**
+   - Click the **gear icon** next to “Project Overview” → **Project settings**.
+   - Scroll to **Your apps**. If there is no web app, click the **</>** (Web) icon → register an app nickname (e.g. `FinBud Web`) → optionally **Firebase Hosting** off → **Register app**.
+   - In the **SDK setup and configuration** section, choose **Config** (not npm). You’ll see an object like:
+     ```js
+     const firebaseConfig = {
+       apiKey: "AIza...",
+       authDomain: "your-project.firebaseapp.com",
+       projectId: "your-project-id",
+       storageBucket: "your-project.appspot.com",
+       messagingSenderId: "123456789",
+       appId: "1:123456789:web:abc123"
+     };
+     ```
+   - Keep this tab open; you’ll paste these values into Vercel next.
+
+### Step 2b – Frontend (Vercel) – add Firebase env vars
+
+1. Open [vercel.com](https://vercel.com) → your **FinBud** (or MoneyDecision) project.
+2. Go to **Settings** → **Environment Variables**.
+3. Add **one variable per row**. For each variable, choose **Production** (and **Preview** if you use preview URLs), then **Save**:
+
+   | Name | Value (paste from Firebase config above) |
+   |------|------------------------------------------|
+   | `VITE_FIREBASE_API_KEY` | The `apiKey` value (e.g. `AIza...`) |
+   | `VITE_FIREBASE_AUTH_DOMAIN` | The `authDomain` value (e.g. `your-project.firebaseapp.com`) |
+   | `VITE_FIREBASE_PROJECT_ID` | The `projectId` value |
+   | `VITE_FIREBASE_STORAGE_BUCKET` | The `storageBucket` value (e.g. `your-project.appspot.com`) |
+   | `VITE_FIREBASE_MESSAGING_SENDER_ID` | The `messagingSenderId` value (numeric string) |
+   | `VITE_FIREBASE_APP_ID` | The `appId` value (e.g. `1:123456789:web:abc123`) |
+
+4. **Redeploy** the frontend: **Deployments** → **⋯** on the latest deployment → **Redeploy** (so the new env vars are baked into the build).
+
+### Step 2c – Backend (Railway) – service account JSON
+
+1. In **Firebase Console**, go to **Project settings** (gear icon) → **Service accounts** tab.
+2. Click **Generate new private key** → **Generate key**. A JSON file will download (e.g. `your-project-firebase-adminsdk-xxxxx.json`).
+3. Open that file in a text editor. It is one JSON object (multiple lines). You need to pass the **entire JSON as a single string** to the backend.
+4. **Railway:**  
+   - Open your **Railway** project → click your **backend** service (not Postgres).  
+   - Go to **Variables** → **+ New Variable**.  
+   - **Variable name:** `FIREBASE_SERVICE_ACCOUNT_JSON`.  
+   - **Value:** Paste the **entire contents** of the JSON file (all lines, from `{` to `}`). Railway accepts multi-line values; keep the JSON as-is (no need to minify to one line).  
+   - **Add** / **Save**.
+5. **Render:**  
+   - Open your **Web Service** (backend) → **Environment** → **Add Environment Variable**.  
+   - **Key:** `FIREBASE_SERVICE_ACCOUNT_JSON`.  
+   - **Value:** Paste the entire JSON. If the UI strips newlines, minify the JSON to a single line (remove line breaks between keys) and paste that.  
+   - Save.
+6. **Redeploy** the backend (Railway/Render usually redeploys automatically when you change variables; if not, trigger a redeploy).
+
+After Step 2a–2c, the Login page will show **“Sign in with Firebase”**. Users sign in with Firebase (email/password); the backend exchanges the Firebase ID token for your app JWT. **Sign out** clears the token and signs out of Firebase.
+
 ## Summary
 
 | Where        | What to set |

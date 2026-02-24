@@ -1,4 +1,4 @@
-from .user import UserCreate, UserResponse, Token
+from .user import UserCreate, UserResponse, Token, FirebaseTokenRequest
 from .profile import (
     DebtCreate,
     DebtResponse,
@@ -14,6 +14,7 @@ __all__ = [
     "UserCreate",
     "UserResponse",
     "Token",
+    "FirebaseTokenRequest",
     "DebtCreate",
     "DebtResponse",
     "DebtPayoffResult",

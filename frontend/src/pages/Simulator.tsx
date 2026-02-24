@@ -41,17 +41,20 @@ export default function Simulator() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold text-slate-800">Debt Simulator</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Debt Simulator</h1>
+        <p className="mt-1 text-slate-600 text-sm">12‑month payoff projection</p>
+      </div>
 
-      <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-        <h2 className="text-lg font-medium text-slate-800 mb-4">12‑month projection</h2>
+      <div className="card">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">12‑month projection</h2>
         {token && (debts?.length ?? 0) > 0 ? (
           <>
-            <label className="block text-sm text-slate-600 mb-2">Select debt</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Select debt</label>
             <select
               value={selectedDebtId ?? ''}
               onChange={(e) => setSelectedDebtId(e.target.value ? Number(e.target.value) : null)}
-              className="border border-slate-300 rounded px-3 py-2 mb-4"
+              className="input mb-4 max-w-xs"
             >
               <option value="">-- Choose --</option>
               {debts?.map((d) => (
@@ -63,7 +66,9 @@ export default function Simulator() {
             {payoff !== null && (
               <p className="text-slate-600 mb-4">
                 Months to payoff:{' '}
-                {payoff === Infinity ? 'Never (payment ≤ interest)' : payoff}
+                <span className="font-medium text-slate-800">
+                  {payoff === Infinity ? 'Never (payment ≤ interest)' : payoff}
+                </span>
               </p>
             )}
             {chartData.length > 0 && (
@@ -85,7 +90,7 @@ export default function Simulator() {
             )}
           </>
         ) : (
-          <p className="text-slate-500">
+          <p className="text-slate-500 text-sm">
             Sign in and add at least one debt in Profile to see the projection chart.
           </p>
         )}
